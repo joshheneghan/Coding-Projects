@@ -1,0 +1,58 @@
+from PIL import Image, ImageDraw, ImageFont #Modules used
+import numpy as np
+width = 600
+height = 400
+im = Image.new('RGB', (width, height), (0, 0, 0)) #Setting up images' canvas size and background colour
+draw = ImageDraw.Draw(im) #Drawing the image
+
+RE_START = -2 #Variables used later
+RE_END = 1 #These values' ranges are the ones in which we will be plotting the Mandelbrot set for
+IM_START = -1 #With RE representing the real set and IM representing the imaginary set
+IM_END = 1
+
+max_i=20 #Max iterations used in this code
+
+def remap(val_o, min_o, max_o, min_n, max_n): #Setting up a remap function to use later
+    return (max_n - min_n)*(val_o - min_o) / (max_o - min_o) + min_n
+
+def div(c,max_i): #Take in a mapped point c and the max amount of iterations
+    z = complex(0,0) #As it is a Mandelbrot set, z=0 to start
+    i = 0 #Set up counter
+    u = []
+    while i < max_i and abs(z) <= 2: #Run loop while both are true, if either is not, return the value of i
+        z = z*z + c #The recursive equation we use in the Mandelbrot set
+        i += 1 #Adding 1 to counter
+    if z in u:
+        pass
+    else:
+        u.append(z)
+    return i, len(u) #Return count
+
+for x in range(0,width): #Looping across all x pixels
+    for y in range(0,height): #Looping across all y pixels
+        a = remap(x,0,width,RE_START,RE_END) #Remap x
+        b = remap(y,0,height,IM_START,IM_END) #Remap y
+        p = complex(a,b) #Create complex number of x and y
+        l,t = div(p,max_i) #Find the divergence value of the complex number
+        if l < max_i: #If it is not in the set, colour point black
+            value = 255
+        else: #If in set, colour it white
+            value = 0 
+        hue = 255-int(l * 255 / max_i) #Adding hue
+        draw.point([x, y], (value, hue, hue)) #Drawing point
+        
+font = ImageFont.truetype("news serif bolditalic.ttf",size=16) #Font class
+draw.rectangle((0,height/2-1,width,height/2+1),fill="black") #y-axis
+draw.rectangle((width/8 + width/4 * 2 +1 , 0,width/8 + width/4 * 2 -1 , height),fill="black")#x=axis
+
+for i in range(0,4): #Plotting the numberline of the x numbers
+    x = range(RE_START,RE_END+1)
+    if i == 0 or i == 4:
+        colour = (255,255,255)
+    else:
+        colour = (0,0,0)
+    draw.text((width/8+width/4 * i, height/2 + 5), "{}".format(x[i]),colour,font=font)
+
+draw.text((0, 0),"The Mandelbrot Set",(255,255,255),font=font) #Draw a title
+im.show() #Showing final image
+#im.save("MDS.png") #Save image
