@@ -1,0 +1,37 @@
+import numpy as np
+import matplotlib.pyplot as plt
+import math
+
+def isprime(x):
+    r_sqrtx = math.ceil(round(np.sqrt(x)))
+    #print(r_sqrtx)
+    test_range = np.arange(2,r_sqrtx+1)
+    #print(test_range)
+    i = 0
+    for t in test_range:
+        if x%t == 0:
+            i += 1
+    if i != 0:
+        return 0
+    else:
+        return 1
+
+
+def primes(x,y):
+    u = []
+    l = np.arange(x,y+1)
+    for t in l:
+        if isprime(t) == 1 and t>1:
+            u.append(t)
+        else:
+            pass
+    return u
+
+def plot_primes(x,y):
+    f = primes(x,y)
+    t = np.arange(0, len(f))
+    plt.plot(t,f, 'x')
+    return t, f
+
+t,f = plot_primes(0,500)
+print(isprime(5))
