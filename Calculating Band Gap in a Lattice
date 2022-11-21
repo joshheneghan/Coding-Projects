@@ -1,0 +1,36 @@
+#Importing libraries
+import numpy as np
+from numpy.linalg import eig
+import matplotlib.pyplot as plt
+from astropy import constants as con
+
+#Setting up constants
+e = (con.e).value
+a = 1*10**-10
+g = 2*np.pi/a
+hbar= (con.hbar).value
+m = (con.m_e).value
+V_0 = 2*10**-19
+
+#r in this case is the range, taking from -pi/a as when taken from 0, there is artefacts in the graph near 0
+r =  np.linspace(-np.pi/a,np.pi/a,1000) 
+
+#Setting up empty arrays to save into later
+E_k = [] 
+k_vec = []
+
+#Looping over all k's to find all eigen-vectors
+for k in r:
+    k_vec.append(k)
+    M = [[((hbar**2 / (2*m))*(k-g)**2),V_0/2,0],
+         [V_0/2,((hbar**2/(2*m))* (k**2)), V_0/2],
+         [0,V_0/2,((hbar**2 / (2*m)) * (k+g)**2)]]
+    W,V = eig(M) #Taking e-vectors and e-values
+    E_k.append(W/e)
+    
+#Plotting
+plt.plot(k_vec, E_k)
+plt.xlim(0, max(k_vec)) #Taking from 0 to pi/a for the needed range
+plt.title("The Eigen-Values Of The Central Equation With Respect To Their Wave-Number")
+plt.xlabel("Wave-Numbers (m$^{-1}$)")
+plt.ylabel("Energy (eV)")
