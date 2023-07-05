@@ -1,0 +1,2217 @@
+import numpy as np
+import matplotlib.pyplot as plt
+import random
+import time
+#%%
+#Testing Euler Method for a set dt
+#Importing Modules
+import matplotlib.pyplot as plt
+import time
+import numpy as np
+
+#Setting up figure
+fig, ax = plt.subplots(2,3)
+
+#Setting up test functions
+def dxdt(y):
+    return y
+
+def dydt(x):
+    return -x
+
+#Setting up initial conditions, time, h value (dt) and vectors to save values in for plotting
+x = 1
+y = 0
+dt = 0.00001
+t = 0
+final_t = 10
+X = []
+Y = []
+ErrX = []
+ErrY  = []
+Errtot = []
+T = []
+
+start = time.time() #Initial time to measure length of time taken
+while t < final_t:
+    T.append(t)
+    X.append(x)
+    Y.append(y)
+    ErrX.append(abs(x-np.cos(t))*100) #Errors
+    ErrY.append(abs(y+np.sin(t))*100)
+    Errtot.append(abs((x**2 + y**2)-1)*100)
+    l = dxdt(y) #Saving current eqn
+    m = dydt(x)
+    x = x + dt*l #Euler step
+    y = y + dt*m
+    t += dt
+
+TIME = round(abs(start-time.time()),3) #Time taken for Euler
+#working out means
+Averrtot = np.format_float_scientific(np.mean(Errtot),precision=4)
+Averrx = np.format_float_scientific(np.mean(ErrX),precision=4)
+Averry = np.format_float_scientific(np.mean(ErrY),precision=4)
+
+# #Plotting and making pretty
+ax[0][0].plot(X,Y)
+ax[0][0].set_title("Plot of y vs x")
+ax[0][0].set_xlabel("x")
+ax[0][0].set_ylabel("y")
+ax[0][1].plot(T,X)
+ax[0][1].set_title("Plot of x vs Time")
+ax[0][1].set_xlabel("Time")
+ax[0][1].set_ylabel("x")
+ax[0][2].plot(T,Y)
+ax[0][2].set_title("Plot of y vs Time")
+ax[0][2].set_xlabel("Time")
+ax[0][2].set_ylabel("y")
+ax[1][0].semilogy(T,Errtot)
+ax[1][0].set_title("How The Error In The Modulus Of The Vector Of Solutions Evolves With Time, Average Error Of {}%".format(Averrtot), wrap = True)
+ax[1][0].set_xlabel("Time")
+ax[1][0].set_ylabel("Error In The Modulus Of The Vector Solutions")
+ax[1][1].semilogy(T, ErrX)
+ax[1][1].set_title("How The Error In x Evolves In Time, Average Error of {}%".format(Averrx), wrap  =True, y=1.04)
+ax[1][1].set_xlabel("Time")
+ax[1][1].set_ylabel("Error In x")
+ax[1][2].semilogy(T, ErrY)
+ax[1][2].set_title("How The Error In y Evolves In Time, Average Error Of {}%".format(Averry), wrap = True, y=1.04)
+ax[1][2].set_xlabel("Time")
+ax[1][2].set_ylabel("Error In y")
+fig.suptitle(r'Test Function Of The Euler Method For $\frac{{dx}}{{dt}}=y$ and $\frac{{dy}}{{dt}}=-x$ at h = {} With Initial Values $x(0)=1$ and $y(0)=0$ (Time taken is {} seconds)'.format(dt,TIME), wrap = True)
+plt.subplots_adjust(top=0.915, bottom=0.062, left=0.045, right=0.992, hspace=0.217, wspace=0.159)
+plt.show()
+
+#%%
+#Testing Euler  for variable dt
+#Importing Modules
+import matplotlib.pyplot as plt
+import time
+import numpy as np
+
+#Setting upfigure for all plots
+# fig, ax = plt.subplots(2,3)
+
+#For one fig
+fig, ax = plt.subplots()
+
+#Setting up test functions
+def dxdt(y):
+    return y
+
+def dydt(x):
+    return -x
+
+# ErrX = []
+# ErrY = []
+Errtot = []
+def euler(N):
+    x = 1
+    y = 0
+    final_t = 10
+    dt = final_t/N
+    t = 0
+    X = []
+    Y = []
+    T = []
+    while t < final_t:
+        T.append(t)
+        X.append(x)
+        Y.append(y)
+        l = dxdt(y) #Saving current eqn
+        m = dydt(x)
+        x = x + dt*l #Euler step
+        y = y + dt*m
+        t += dt
+    #If plotting of each N wanted
+    # ax[0][0].plot(X,Y)
+    # ax[0][1].plot(T,X)
+    # ax[0][2].plot(T,Y)
+    # ErrX.append(abs(X[len(T)-1]-np.cos(final_t))*100) #Errors
+    # ErrY.append(abs(Y[len(T)-1]+np.sin(final_t))*100)
+    Errtot.append(abs((X[len(T)-1]**2 + Y[len(T)-1]**2)-1)*100)
+    print(N)
+
+#Running for multiple dt
+steps = 10000
+N = np.linspace(1,steps,steps)
+for P in N:
+    euler(P)
+
+#Plotting errors
+ax.loglog(N,Errtot)
+ax.set_ylabel("% Error In The Modulus Squared Of The Solution")
+ax.set_xlabel("Number Of Steps Used")
+#If errors in x and y are wanted
+#ax[1][1].loglog(N,ErrX)
+#ax[1][2].loglog(N,ErrY)
+
+#Making pretty for y and x graphs
+# ax[0][0].set_title("Plot of y vs x")
+# ax[0][0].set_xlabel("x")
+# ax[0][0].set_ylabel("y")
+# ax[0][1].set_title("Plot of x vs Time")
+# ax[0][1].set_xlabel("Time")
+# ax[0][1].set_ylabel("x")
+# ax[0][2].set_title("Plot of y vs Time")
+# ax[0][2].set_xlabel("Time")
+# ax[0][2].set_ylabel("y")
+# fig.suptitle(r'Test Function Of The Euler Method For $\frac{{dx}}{{dt}}=y$ and $\frac{{dy}}{{dt}}=-x$ With Initial Values $x(0)=1$ and $y(0)=0$', wrap = True)
+# plt.subplots_adjust(top=0.915, bottom=0.062, left=0.045, right=0.992, hspace=0.217, wspace=0.159)
+# plt.show()    
+#%%
+#Runge-Kutta 4th Order Test for a set dt
+#importing modules
+import matplotlib.pyplot as plt
+import time
+import numpy as np
+
+#Setting up figure
+fig, ax = plt.subplots(2,3)
+
+#Setting up functions
+def dxdt(y):
+    return y
+
+def dydt(x):
+    return -x
+
+#Runga-Kutta
+def rk(x,y):
+    k1x = dt*dxdt(y) 
+    k1y = dt*dydt(x)
+    k2x  = dt*dxdt(y+k1y/2)
+    k2y  = dt*dydt(x+k1x/2)
+    k3x  = dt*dxdt(y+k2y/2)
+    k3y  = dt*dydt(x+k2x/2)
+    k4x  = dt*dxdt(y+k3y)
+    k4y  = dt*dydt(x+k3x)
+    #Returning step in x and y
+    return (1/6)*(k1x+ 2*k2x + 2*k3x + k4x),(1/6)*(k1y+ 2*k2y + 2*k3y + k4y)
+
+#Setting up initial conditions, time steps and vectors to save values in for plotting
+x = 1
+y = 0
+dt = 0.00001
+t = 0
+final_t = 10
+X = []
+Y = []
+ErrX = []
+ErrY  = []
+Errtot = []
+T = []
+
+start = time.time() #Start time for time take
+while t < final_t:
+    T.append(t)
+    X.append(x)
+    Y.append(y)
+    ErrX.append(abs(x-np.cos(t))) #Errors
+    ErrY.append(abs(y+np.sin(t)))
+    Errtot.append(abs((x**2 + y**2)-1))
+    l, m = rk(x,y) #Saving rk values
+    x = x + l #Rk step
+    y = y + m
+    t += dt
+    print(t)
+
+TIME = round(abs(start-time.time()),3) #Time taken for rk
+#Mean errors
+Averrtot = np.format_float_scientific(np.mean(Errtot),precision=4)
+Averrx = np.format_float_scientific(np.mean(ErrX),precision=4)
+Averry = np.format_float_scientific(np.mean(ErrY),precision=4)
+
+#Plotting and making pretty
+ax[0][0].plot(X,Y)
+ax[0][0].set_title("Plot of y vs x")
+ax[0][0].set_xlabel("x")
+ax[0][0].set_ylabel("y")
+ax[0][1].plot(T,X)
+ax[0][1].set_title("Plot of x vs Time")
+ax[0][1].set_xlabel("Time")
+ax[0][1].set_ylabel("x")
+ax[0][2].plot(T,Y)
+ax[0][2].set_title("Plot of y vs Time")
+ax[0][2].set_xlabel("Time")
+ax[0][2].set_ylabel("y")
+ax[1][0].plot(T,Errtot)
+ax[1][0].set_title("How The Error In The Modulus Of The Vector Of Solutions Evolves With Time, Average Error Of {}".format(Averrtot), wrap = True)
+ax[1][0].set_xlabel("Time")
+ax[1][0].set_ylabel("Error In The Modulus Of The Vector Solutions")
+ax[1][1].plot(T, ErrX)
+ax[1][1].set_title("How The Error In x Evolves In Time, Average Error of {}".format(Averrx), wrap  =True, y=1.04)
+ax[1][1].set_xlabel("Time")
+ax[1][1].set_ylabel("Error In x")
+ax[1][2].plot(T, ErrY)
+ax[1][2].set_title("How The Error In y Evolves In Time, Average Error Of {}".format(Averry), wrap = True, y=1.04)
+ax[1][2].set_xlabel("Time")
+ax[1][2].set_ylabel("Error In y")
+fig.suptitle(r'Test Function Of The Runga-Kutta Method For $\frac{{dx}}{{dt}}=y$ and $\frac{{dy}}{{dt}}=-x$ at h = {} With Initial Values $x(0)=1$ and $y(0)=0$ (Time taken is {} seconds)'.format(dt,TIME), wrap = True)
+plt.subplots_adjust(top=0.915, bottom=0.062, left=0.045, right=0.992, hspace=0.217, wspace=0.159)
+plt.show()
+#%%
+#Runge-Kutta 4th Order Test for variable dt
+#importing modules
+import matplotlib.pyplot as plt
+import time
+import numpy as np
+
+# #Setting up figure
+# fig, ax = plt.subplots(2,3)
+
+fig, ax = plt.subplots()
+
+#Setting up functions
+def dxdt(y):
+    return y
+
+def dydt(x):
+    return -x
+
+#Runga-Kutta
+def rk(x,y):
+    k1x = dt*dxdt(y) 
+    k1y = dt*dydt(x)
+    k2x  = dt*dxdt(y+k1y/2)
+    k2y  = dt*dydt(x+k1x/2)
+    k3x  = dt*dxdt(y+k2y/2)
+    k3y  = dt*dydt(x+k2x/2)
+    k4x  = dt*dxdt(y+k3y)
+    k4y  = dt*dydt(x+k3x)
+    #Returning step in x and y
+    return (1/6)*(k1x+ 2*k2x + 2*k3x + k4x),(1/6)*(k1y+ 2*k2y + 2*k3y + k4y)
+
+#Setting up initial conditions, time steps and vectors to save values in for plotting
+ErrX = []
+ErrY  = []
+Errtot = []
+def rungakutta(N):
+    t = 0
+    final_t = 10
+    global dt
+    dt = final_t/N
+    x = 1
+    y = 0
+    X = []
+    Y = []
+    T = []
+    while t < final_t:
+        T.append(t)
+        X.append(x)
+        Y.append(y)
+        l, m = rk(x,y) #Saving rk values
+        x = x + l #Rk step
+        y = y + m
+        t += dt
+    ErrX.append(abs(X[len(T)-1]-np.cos(final_t))*100) #Errors
+    ErrY.append(abs(Y[len(T)-1]+np.sin(final_t))*100)
+    Errtot.append(abs((X[len(T)-1]**2 + Y[len(T)-1]**2)-1)*100)
+    # If plot of x and y in t is needed
+    # ax[0][0].plot(X,Y)
+    # ax[0][1].plot(T,X)
+    # ax[0][2].plot(T,Y)
+    print(N)
+    
+End = 10000
+N = np.linspace(1,End,End)
+for P in N:
+    rungakutta(P)
+    
+    
+#Plotting and making pretty
+# ax[0][0].set_title("Plot of y vs x")
+# ax[0][0].set_xlabel("x")
+# ax[0][0].set_ylabel("y")
+# ax[0][1].set_title("Plot of x vs Time")
+# ax[0][1].set_xlabel("Time")
+# ax[0][1].set_ylabel("x")
+# ax[0][2].set_title("Plot of y vs Time")
+# ax[0][2].set_xlabel("Time")
+# ax[0][2].set_ylabel("y")
+ax.loglog(N,Errtot)
+# ax[1][1].loglog(N, ErrX)
+# ax[1][2].loglog(N, ErrY)
+# fig.suptitle(r'Test Function Of The Runga-Kutta Method For $\frac{{dx}}{{dt}}=y$ and $\frac{{dy}}{{dt}}=-x$ With Initial Values $x(0)=1$ and $y(0)=0$', wrap = True)
+# plt.subplots_adjust(top=0.915, bottom=0.062, left=0.045, right=0.992, hspace=0.217, wspace=0.159)
+ax.set_xlabel("Number Of Steps Taken")
+ax.set_ylabel("The % Error In The Modulus Of The Solution")
+plt.show()
+
+#%%
+#Adam-Bashforth Test for set dt
+#Importing modules
+import matplotlib.pyplot as plt
+import time
+import numpy as np
+import time
+
+#Setting up figure
+fig, ax = plt.subplots(2,3)
+
+#Functions
+def dxdt(y):
+    return y
+
+def dydt(x):
+    return -x
+
+#Adam-Bashforth function
+def ab(x,y,i):
+    if i != 1: #AB step
+       x = x + dt/2 * (3*dxdt(Y[i-1])-dxdt(Y[i-2]))
+       y = y + dt/2 * (3*dydt(X[i-1])-dydt(X[i-2]))
+    else: #Initial AB step (Euler step)
+        l = dxdt(y)
+        m = dydt(x)
+        x = x + dt*l
+        y = y + dt*m
+    return x, y
+
+#Setting up initial conditions, time step and vectors to save variables in for plotting    
+
+ErrX = []
+ErrY  = []
+Errtot = []
+
+
+x = 1
+y = 0
+final_t = 10
+dt = 0.00001
+t = 0
+X = []
+Y = []
+T = []
+i = 1
+start = time.time()
+while t < final_t:
+    T.append(t)
+    X.append(x)
+    Y.append(y)
+    x, y = ab(x,y,i) #AB
+    t += dt
+    i += 1
+    ErrX.append(abs(x-np.cos(t)))
+    ErrY.append(abs(x+np.sin(t)))
+    Errtot.append(abs((x**2 + y**2)-1))
+    print(t)
+
+TIME = round(abs(start-time.time()),3) #Time taken for ab
+#Mean errors
+Averrtot = np.format_float_scientific(np.mean(Errtot),precision=4)
+Averrx = np.format_float_scientific(np.mean(ErrX),precision=4)
+Averry = np.format_float_scientific(np.mean(ErrY),precision=4)
+
+#Plotting and making pretty
+ax[0][0].plot(X,Y)
+ax[0][1].plot(T,X)
+ax[0][2].plot(T,Y)
+ax[0][0].set_title("Plot of y vs x")
+ax[0][0].set_xlabel("x")
+ax[0][0].set_ylabel("y")
+
+ax[0][1].set_title("Plot of x vs Time")
+ax[0][1].set_xlabel("Time")
+ax[0][1].set_ylabel("x")
+
+ax[0][2].set_title("Plot of y vs Time")
+ax[0][2].set_xlabel("Time")
+ax[0][2].set_ylabel("y")
+ax[1][0].plot(T, Errtot)
+ax[1][1].plot(T, ErrX)
+ax[1][2].plot(T, ErrY)
+fig.suptitle(r'Test Function Of The Adams-Bashforth Method For $\frac{{dx}}{{dt}}=y$ and $\frac{{dy}}{{dt}}=-x$ With Initial Values $x(0)=1$ and $y(0)=0$', wrap = True)
+plt.subplots_adjust(top=0.915, bottom=0.062, left=0.045, right=0.992, hspace=0.217, wspace=0.159)
+plt.show()
+#%%
+#Adam-Bashforth Test for a set dt
+#Importing modules
+import matplotlib.pyplot as plt
+import time
+import numpy as np
+
+#Setting up figure
+fig, ax = plt.subplots(2,3)
+
+#Functions
+def dxdt(y):
+    return y
+
+def dydt(x):
+    return -x
+
+#Adam-Bashforth function
+def ab(x,y,i):
+    if i != 1: #AB step
+       x = x + dt/2 * (3*dxdt(Y[i-1])-dxdt(Y[i-2]))
+       y = y + dt/2 * (3*dydt(X[i-1])-dydt(X[i-2]))
+    else: #Initial AB step (Euler step)
+        l = dxdt(y)
+        m = dydt(x)
+        x = x + dt*l
+        y = y + dt*m
+    return x, y
+
+#Setting up initial conditions, time step and vectors to save variables in for plotting    
+x = 1
+y = 0
+dt = 0.00001
+t = 0
+final_t = 10
+X = []
+Y = []
+ErrX = []
+ErrY  = []
+Errtot = []
+T = []
+i = 1
+
+start = time.time() #Initial time for time taken
+while t < final_t:
+    T.append(t)
+    X.append(x)
+    Y.append(y)
+    #Errors
+    ErrX.append(abs(x-np.cos(t)))
+    ErrY.append(abs(y+np.sin(t)))
+    Errtot.append(abs((x**2 + y**2)-1))
+    x, y = ab(x,y,i) #AB
+    t += dt
+    i += 1
+
+TIME = round(abs(start-time.time()),3) #Time taken
+#Mean errors
+Averrtot = np.format_float_scientific(np.mean(Errtot),precision=4)
+Averrx = np.format_float_scientific(np.mean(ErrX),precision=4)
+Averry = np.format_float_scientific(np.mean(ErrY),precision=4)
+
+#Plotting and making pretty
+ax[0][0].plot(X,Y)
+ax[0][0].set_title("Plot of y vs x")
+ax[0][0].set_xlabel("x")
+ax[0][0].set_ylabel("y")
+ax[0][1].plot(T,X)
+ax[0][1].set_title("Plot of x vs Time")
+ax[0][1].set_xlabel("Time")
+ax[0][1].set_ylabel("x")
+ax[0][2].plot(T,Y)
+ax[0][2].set_title("Plot of y vs Time")
+ax[0][2].set_xlabel("Time")
+ax[0][2].set_ylabel("y")
+ax[1][0].plot(T,Errtot)
+ax[1][0].set_title("How The Error In The Modulus Of The Vector Of Solutions Evolves With Time, Average Error Of {}".format(Averrtot), wrap = True)
+ax[1][0].set_xlabel("Time")
+ax[1][0].set_ylabel("Error In The Modulus Of The Vector Solutions")
+ax[1][1].plot(T, ErrX)
+ax[1][1].set_title("How The Error In x Evolves In Time, Average Error of {}".format(Averrx), wrap  =True, y=1.04)
+ax[1][1].set_xlabel("Time")
+ax[1][1].set_ylabel("Error In x")
+ax[1][2].plot(T, ErrY)
+ax[1][2].set_title("How The Error In y Evolves In Time, Average Error Of {}".format(Averry), wrap = True, y=1.04)
+ax[1][2].set_xlabel("Time")
+ax[1][2].set_ylabel("Error In y")
+fig.suptitle(r'Test Function Of The Adams-Bashforth Method For $\frac{{dx}}{{dt}}=y$ and $\frac{{dy}}{{dt}}=-x$ at h = {} With Initial Values $x(0)=1$ and $y(0)=0$ (Time taken is {} seconds)'.format(dt,TIME), wrap = True)
+plt.subplots_adjust(top=0.915, bottom=0.062, left=0.045, right=0.992, hspace=0.217, wspace=0.159)
+plt.show()
+#%%
+#Adam-Bashforth Test for varying dt
+#Importing modules
+import matplotlib.pyplot as plt
+import time
+import numpy as np
+
+#Setting up figure
+# fig, ax = plt.subplots(2,3)
+
+fig, ax = plt.subplots()
+
+#Functions
+def dxdt(y):
+    return y
+
+def dydt(x):
+    return -x
+
+#Adam-Bashforth function
+def ab(x,y,i):
+    if i != 1: #AB step
+       x = x + dt/2 * (3*dxdt(Y[i-1])-dxdt(Y[i-2]))
+       y = y + dt/2 * (3*dydt(X[i-1])-dydt(X[i-2]))
+    else: #Initial AB step (Euler step)
+        l = dxdt(y)
+        m = dydt(x)
+        x = x + dt*l
+        y = y + dt*m
+    return x, y
+
+#Setting up initial conditions, time step and vectors to save variables in for plotting    
+
+ErrX = []
+ErrY  = []
+Errtot = []
+
+
+def adamb(N):
+    x = 1
+    y = 0
+    final_t = 10
+    global dt, X, Y
+    dt = final_t/N
+    t = 0
+    X = []
+    Y = []
+    T = []
+    i = 1
+    while t < final_t:
+        T.append(t)
+        X.append(x)
+        Y.append(y)
+        #Errors
+        x, y = ab(x,y,i) #AB
+        t += dt
+        i += 1
+    #Plotting each dt
+    # ax[0][0].plot(X,Y)
+    # ax[0][1].plot(T,X)
+    # ax[0][2].plot(T,Y)
+    ErrX.append(abs(X[len(T)-1]-np.cos(final_t))*100)
+    ErrY.append(abs(Y[len(T)-1]+np.sin(final_t)))
+    Errtot.append(abs((X[len(T)-1]**2 + Y[len(T)-1]**2)-1))
+    print(N)
+
+
+#Plotting and making pretty
+
+# ax[0][0].set_title("Plot of y vs x")
+# ax[0][0].set_xlabel("x")
+# ax[0][0].set_ylabel("y")
+
+# ax[0][1].set_title("Plot of x vs Time")
+# ax[0][1].set_xlabel("Time")
+# ax[0][1].set_ylabel("x")
+
+# ax[0][2].set_title("Plot of y vs Time")
+# ax[0][2].set_xlabel("Time")
+# ax[0][2].set_ylabel("y")
+
+Steps = 1000
+N = np.linspace(1,steps,steps)
+for P in N:
+    adamb(P)
+
+ax.loglog(N,Errtot)
+ax.set_ylabel("The Error In The Modulus Squared Of The Solutiions")
+ax.set_xlabel("Number Of Steps Taken")
+# ax[1][1].loglog(N, ErrX)
+# ax[1][2].loglog(N, ErrY)
+# fig.suptitle(r'Test Function Of The Adams-Bashforth Method For $\frac{{dx}}{{dt}}=y$ and $\frac{{dy}}{{dt}}=-x$ With Initial Values $x(0)=1$ and $y(0)=0$', wrap = True)
+# plt.subplots_adjust(top=0.915, bottom=0.062, left=0.045, right=0.992, hspace=0.217, wspace=0.159)
+plt.show()
+#%%
+#Comparing Errors Of All Methods At Different dt's
+#importing modules
+import matplotlib.pyplot as plt
+import time
+import numpy as np
+
+#Setting up figures
+fig, ax = plt.subplots()
+
+#Defining functions
+def dxdt(y):
+    return y
+
+def dydt(x):
+    return -x
+
+#Plotting all three different ways of calculating integration and errors
+Errtote = []
+def euler(N):
+    x = 1
+    y = 0
+    final_t = 10
+    dt = final_t/N
+    t = 0
+    X = []
+    Y = []
+    T = []
+    while t < final_t:
+        T.append(t)
+        X.append(x)
+        Y.append(y)
+        l = dxdt(y) #Saving current eqn
+        m = dydt(x)
+        x = x + dt*l #Euler step
+        y = y + dt*m
+        t += dt
+    Errtote.append(abs((X[len(T)-1]**2 + Y[len(T)-1]**2)-1)*100)
+
+
+def rk(x,y):
+    k1x = dt*dxdt(y) 
+    k1y = dt*dydt(x)
+    k2x  = dt*dxdt(y+k1y/2)
+    k2y  = dt*dydt(x+k1x/2)
+    k3x  = dt*dxdt(y+k2y/2)
+    k3y  = dt*dydt(x+k2x/2)
+    k4x  = dt*dxdt(y+k3y)
+    k4y  = dt*dydt(x+k3x)
+    #Returning step in x and y
+    return (1/6)*(k1x+ 2*k2x + 2*k3x + k4x),(1/6)*(k1y+ 2*k2y + 2*k3y + k4y)
+
+Errtotrk = []
+def rungakutta(N):
+    t = 0
+    final_t = 10
+    global dt
+    dt = final_t/N
+    x = 1
+    y = 0
+    T = []
+    X = []
+    Y = []
+    while t < final_t:
+        T.append(t)
+        X.append(x)
+        Y.append(y)
+        l, m = rk(x,y) #Saving rk values
+        x = x + l #Rk step
+        y = y + m
+        t += dt
+    Errtotrk.append(abs((X[len(T)-1]**2 + Y[len(T)-1]**2)-1)*100)
+
+#Adam-Bashforth function
+def ab(x,y,i):
+    if i != 1: #AB step
+       x = x + dt/2 * (3*dxdt(Y[i-1])-dxdt(Y[i-2]))
+       y = y + dt/2 * (3*dydt(X[i-1])-dydt(X[i-2]))
+    else: #Initial AB step (Euler step)
+        l = dxdt(y)
+        m = dydt(x)
+        x = x + dt*l
+        y = y + dt*m
+    return x, y
+
+Errtotab = []
+def adamb(N):
+    x = 1
+    y = 0
+    final_t = 10
+    global dt, X, Y
+    dt = final_t/N
+    t = 0
+    X = []
+    Y = []
+    T = []
+    i = 1
+    while t < final_t:
+        T.append(t)
+        X.append(x)
+        Y.append(y)
+        x, y = ab(x,y,i) #AB
+        t += dt
+        i += 1
+    Errtotab.append(abs((X[len(T)-1]**2 + Y[len(T)-1]**2)-1))
+    
+steps = 10000
+N = np.linspace(1, steps,steps)
+for P in N:
+    euler(P)
+    rungakutta(P)
+    adamb(P)
+    print(P)
+
+ax.loglog(N,Errtote)
+ax.loglog(N,Errtotrk)
+ax.loglog(N,Errtotab)
+ax.set_xlabel("Number Of Steps Taken")
+ax.set_ylabel("The Percentage Error In The Modulus Of The Solution")
+ax.legend(["Euler","Runge-Kutta","Adams-Bashforth"])
+
+# fig.suptitle("Comparing Different Methods Of Integration At Different h values")
+plt.show()
+#%%
+#2 Body Problem for a plus and minus vortic
+
+import matplotlib.pyplot as plt
+import time
+import numpy as np
+T1 = time.time()
+#Setting up data
+N = 2
+dt = 0.001
+t = 0
+final_t = 5
+data = np.zeros([N,5])
+pos = np.zeros([int(final_t/dt)+1,N*2])
+data[0][0] = 1
+data[1][0] = -1
+data[0][3] = 1
+data[1][3] = 0
+data[0][4] = 0
+data[1][4] = 0
+Errtot = []
+T = []
+
+color = ["red","blue"]
+
+#Equations needed
+def u_comp(time,i,x,y): #Eq'n for dx/dt
+    u = 0
+    for j in range(N):
+        if j != i:
+            r2 = (data[j][3]-x)*(data[j][3]-x) + (data[j][4]-y)*(data[j][4]-y)
+            u += (data[j][0]/r2) * (y-data[j][4])
+    return -u
+
+def v_comp(time,i,x,y): #Eq'n for dy/dt
+    v = 0
+    for j in range(N):
+        if j != i:
+            r2 = (data[j][3]-x)*(data[j][3]-x) + (data[j][4]-y)*(data[j][4]-y)
+            v += (data[j][0]/r2) * (x - data[j][3])
+    return v
+
+def rungek(time,i,x,y):
+    k1u = dt*u_comp(time,i, x,y) 
+    k1v = dt*v_comp(time,i,x,y)
+    k2u  = dt*u_comp(time+dt/2,i, x+k1u/2, y+k1v/2)
+    k2v  = dt*v_comp(time + dt/2,i, x+k1u/2, y+k1v/2)
+    k3u  = dt*u_comp(time+dt/2,i,x+k2u/2, y+k2v/2)
+    k3v  = dt*v_comp(time + dt/2,i, x+k2u/2, y+k2v/2)
+    k4u  = dt*u_comp(time+dt,i,x+k3u, y+k3v)
+    k4v  = dt*v_comp(time + dt,i, x+k3u, y+k3v)
+    #Returning step in x and y
+    return (1/6)*(k1u+ 2*k2u + 2*k3u + k4u),(1/6)*(k1v+ 2*k2v + 2*k3v + k4v)
+
+#Generating data to plot
+j = 0
+while t < final_t:
+    for i in range(N):
+
+        pos[j][i+i] = data[i][3]
+        pos[j][i+i+1] = data[i][4]
+        r2 = (data[0][3]-data[1][[3]])**2+(data[0][4]-data[1][4])**2
+        l, m = rungek(t, i, data[i][3],data[i][4])
+        data[i][3] = data[i][3] + l
+        data[i][4] = data[i][4] + m
+    Errtot.append((r2-1)*100)
+    T.append(t)
+    t += dt
+    print(t)
+    j += 1
+    
+#Plotting and Making pretty
+fig, ax = plt.subplots(1,2)
+pos = pos[0 : len(Errtot)]
+for i in range(N):
+    ax[0].scatter(pos[0][i+i],pos[0][i+i+1],color = color[i])
+    ax[0].scatter(pos[len(pos)-1][i+i],pos[len(pos)-1][i+i+1], color = color[i], facecolors="none")
+    ax[0].plot(pos[:,i+i],pos[:,i+i+1], color = color[i],alpha = 0.5)
+ax[0].set_xticks([])
+ax[0].set_xticks([], minor=True)
+ax[0].set_yticks([])
+ax[0].set_yticks([], minor=True)
+ax[1].semilogy(T,Errtot)
+ax[1].set_xlabel("Time in Simulation (seconds)", fontsize=10)
+ax[1].set_ylabel("The Percentage Error In The Modulus Of The Solution",fontsize=10, wrap = True)
+fig.subplots_adjust(top=0.982,
+bottom=0.348,
+left=0.01,
+right=0.975,
+hspace=0.06,
+wspace=0.375)
+#Difference in the absolute value of the velocity
+for i in range(N):
+    data[i][1] = u_comp(t, i,data[i][3],data[i][4])
+    data[i][2] = v_comp(t, i,data[i][3],data[i][4])
+
+
+u1 = (abs(data[0][1])-abs(data[1][1]))
+v1 = (abs(data[0][2])-abs(data[1][2]))
+print(np.sqrt(u1**2 + v1**2)*100)
+print(np.mean(Errtot))
+print(abs(time.time()-T1))
+plt.savefig("VV.png",
+            bbox_inches ="tight",
+            dpi = 1000)
+#%%
+#2 Body Problem, Same charge
+import matplotlib.pyplot as plt
+import time
+import numpy as np
+T1= time.time()
+#Setting up data
+N = 2
+dt = 0.001
+t = 0
+final_t = 5
+data = np.zeros([N,5])
+pos = np.zeros([int(final_t/dt)+1,N*2])
+data[0][0] = 1
+data[1][0] = 1
+data[0][3] = 1
+data[1][3] = 0
+data[0][4] = 0
+data[1][4] = 0
+Errtot = []
+T = []
+
+color = ["red","red"]
+
+#Equations needed
+def u_comp(time,i,x,y): #Eq'n for dx/dt
+    u = 0
+    for j in range(N):
+        if j != i:
+            r2 = (data[j][3]-x)*(data[j][3]-x) + (data[j][4]-y)*(data[j][4]-y)
+            u += (data[j][0]/r2) * (y-data[j][4])
+    return -u
+
+def v_comp(time,i,x,y): #Eq'n for dy/dt
+    v = 0
+    for j in range(N):
+        if j != i:
+            r2 = (data[j][3]-x)*(data[j][3]-x) + (data[j][4]-y)*(data[j][4]-y)
+            v += (data[j][0]/r2) * (x - data[j][3])
+    return v
+
+def rungek(time,i,x,y):
+    k1u = dt*u_comp(time,i, x,y) 
+    k1v = dt*v_comp(time,i,x,y)
+    k2u  = dt*u_comp(time+dt/2,i, x+k1u/2, y+k1v/2)
+    k2v  = dt*v_comp(time + dt/2,i, x+k1u/2, y+k1v/2)
+    k3u  = dt*u_comp(time+dt/2,i,x+k2u/2, y+k2v/2)
+    k3v  = dt*v_comp(time + dt/2,i, x+k2u/2, y+k2v/2)
+    k4u  = dt*u_comp(time+dt,i,x+k3u, y+k3v)
+    k4v  = dt*v_comp(time + dt,i, x+k3u, y+k3v)
+    #Returning step in x and y
+    return (1/6)*(k1u+ 2*k2u + 2*k3u + k4u),(1/6)*(k1v+ 2*k2v + 2*k3v + k4v)
+
+#Generating data to plot
+j = 0
+while t < final_t:
+    for i in range(N): 
+        pos[j][i+i] = data[i][3]
+        pos[j][i+i+1] = data[i][4]
+        r2 = (data[0][3]-data[1][[3]])**2+(data[0][4]-data[1][4])**2
+        l, m = rungek(t, i, data[i][3],data[i][4])
+        data[i][3] = data[i][3] + l
+        data[i][4] = data[i][4] + m
+    T.append(t)
+    Errtot.append(abs(r2-1)*100)
+    t += dt
+    print(t)
+    j += 1
+  
+#Plotting and making pretty
+fig, ax = plt.subplots(1,2)
+pos = pos[0 : len(Errtot)]
+for i in range(N):
+    ax[0].scatter(pos[0][i+i],pos[0][i+i+1],color = color[i])
+    ax[0].scatter(pos[len(pos)-1][i+i],pos[len(pos)-1][i+i+1], color = color[i], facecolors="none")
+    ax[0].plot(pos[:,i+i],pos[:,i+i+1], color = color[i], alpha= 0.5)
+ax[1].plot(T,Errtot)
+ax[0].set_xticks([])
+ax[0].set_xticks([], minor=True)
+ax[0].set_yticks([])
+ax[0].set_yticks([], minor=True)
+ax[1].semilogy(T,Errtot)
+ax[1].set_xlabel("Time in Simulation (seconds)", fontsize=10)
+ax[1].set_ylabel("The Percentage Error In The Distance Between Vortices",fontsize=10, wrap = True)
+fig.subplots_adjust(top=0.969,
+bottom=0.361,
+left=0.016,
+right=0.977,
+hspace=0.2,
+wspace=0.412)
+#Generating difference in the absolute value of the velocity 
+for i in range(N):
+    data[i][1] = u_comp(t, i,data[i][3],data[i][4])
+    data[i][2] = v_comp(t, i,data[i][3],data[i][4])
+
+u1 = (abs(data[0][1])-abs(data[1][1]))
+v1 = (abs(data[0][2])-abs(data[1][2]))
+print(np.sqrt(u1**2 + v1**2)*100)
+print(abs(T1-time.time()))
+print(np.mean(Errtot))
+plt.savefig("VV.png",
+            bbox_inches ="tight",
+            dpi = 1000)
+#%%
+#4 Body Problem Without adaptive
+import matplotlib.pyplot as plt
+import time
+import numpy as np
+T1 = time.time()
+N = 4
+a = 5
+dt = 0.001
+t = 0
+final_t = 5
+data = np.zeros([N,5])
+pos = np.zeros([int(final_t/dt)+1,N*2])
+#charge
+data[0][0] = -1
+data[1][0] = 1
+data[2][0] = 1
+data[3][0] = -1
+#x
+data[0][3] = 0
+data[1][3] = 0
+data[2][3] = -a
+data[3][3] = -a
+#y
+data[0][4] = a/8
+data[1][4] = -a/8
+data[2][4] = a/8
+data[3][4] = -a/8
+Errtot = []
+T = []
+color = []
+
+c1 = 2*(data[0][3]+2.5)*(data[0][4])*((data[0][3]+2.5)**2 + (data[0][4])**2)**(-0.5) 
+c2 = 2*(data[1][3]+2.5)*(data[1][4])*((data[1][3]+2.5)**2 + (data[1][4])**2)**(-0.5)
+for i in range(len(data)):
+    if data[i][0] == 1:
+        color.append("red")
+    else:
+        color.append("blue")
+
+
+def u_comp(time,i,x,y): #Eq'n for dx/dt
+    u = 0
+    for j in range(N):
+        if j != i:
+            r2 = (data[j][3]-x)*(data[j][3]-x) + (data[j][4]-y)*(data[j][4]-y)
+            u += (data[j][0]/r2) * (y-data[j][4])
+    return -u
+
+def v_comp(time,i,x,y): #Eq'n for dy/dt
+    v = 0
+    for j in range(N):
+        if j != i:
+            r2 = (data[j][3]-x)*(data[j][3]-x) + (data[j][4]-y)*(data[j][4]-y)
+            v += (data[j][0]/r2) * (x - data[j][3])
+    return v
+
+def rungek(time,i,x,y):
+    k1u = dt*u_comp(time,i, x,y) 
+    k1v = dt*v_comp(time,i,x,y)
+    k2u  = dt*u_comp(time+dt/2,i, x+k1u/2, y+k1v/2)
+    k2v  = dt*v_comp(time + dt/2,i, x+k1u/2, y+k1v/2)
+    k3u  = dt*u_comp(time+dt/2,i,x+k2u/2, y+k2v/2)
+    k3v  = dt*v_comp(time + dt/2,i, x+k2u/2, y+k2v/2)
+    k4u  = dt*u_comp(time+dt,i,x+k3u, y+k3v)
+    k4v  = dt*v_comp(time + dt,i, x+k3u, y+k3v)
+    #Returning step in x and y
+    return (1/6)*(k1u+ 2*k2u + 2*k3u + k4u),(1/6)*(k1v+ 2*k2v + 2*k3v + k4v)
+
+def energy(time):
+    i_sum = 0
+    for i in range(N):
+        j_sum = 0
+        x = data[i][3]
+        y = data[i][4]
+        for j in range(N):
+            if j != i :
+                r2 = (data[j][3]-x)**2 + (data[j][4]-y)**2
+                j_sum += data[i][0]*data[j][0] * np.log(r2)
+        i_sum += j_sum
+    return -i_sum
+
+j = 0
+Energy = []
+Err = []
+while t < final_t:
+    for i in range(N):
+        pos[j][i+i] = data[i][3]
+        pos[j][i+i+1] = data[i][4]
+        l, m = rungek(t, i, data[i][3],data[i][4])
+        data[i][3] = data[i][3] + l
+        data[i][4] = data[i][4] + m
+    T.append(t)
+    Energy.append(energy(t))
+    Err.append(abs(abs((Energy[len(T)-1]-Energy[0]))/Energy[0])*100)
+    t += dt
+    print(t)
+    j += 1
+    
+fig, ax = plt.subplots(1,2)
+
+pos = pos[0 : len(Err)]
+
+
+j = 0
+for i in range(N):
+    ax[0].scatter(pos[0][i+i],pos[0][i+i+1],color = color[i])
+    ax[0].scatter(pos[len(pos)-1][i+i],pos[len(pos)-1][i+i+1], color = color[i], facecolors="none")
+    ax[0].plot(pos[:,i+i],pos[:,i+i+1], color = color[i])
+    
+print(abs(time.time()-T1))
+ax[1].semilogy(T,Err)
+plt.show()
+print(np.mean(Err))
+#%%
+#4 Body Problem With RKF45
+import matplotlib.pyplot as plt
+import time
+import numpy as np
+
+N = 4
+a = 5
+sh = 0.001
+h = sh
+H = []
+min_h = sh/5
+max_h = sh*1.5
+t = 0
+final_t = 5
+data = np.zeros([N,5])
+pos = np.zeros([int(final_t/min_h),N*2])
+#charge
+data[0][0] = -1
+data[1][0] = 1
+data[2][0] = 1
+data[3][0] = -1
+#x
+data[0][3] = 0
+data[1][3] = 0
+data[2][3] = -a
+data[3][3] = -a
+#y
+data[0][4] = a/8
+data[1][4] = -a/8
+data[2][4] = a/8
+data[3][4] = -a/8
+Errtot = []
+T = []
+color = []
+
+for i in range(len(data)):
+    if data[i][0] == 1:
+        color.append("red")
+    else:
+        color.append("blue")
+
+
+def u_comp(time,i,x,y): #Eq'n for dx/dt
+    u = 0
+    for j in range(N):
+        if j != i:
+            r2 = (data[j][3]-x)*(data[j][3]-x) + (data[j][4]-y)*(data[j][4]-y)
+            u += (data[j][0]/r2) * (y-data[j][4])
+    return -u
+
+def v_comp(time,i,x,y): #Eq'n for dy/dt
+    v = 0
+    for j in range(N):
+        if j != i:
+            r2 = (data[j][3]-x)*(data[j][3]-x) + (data[j][4]-y)*(data[j][4]-y)
+            v += (data[j][0]/r2) * (x - data[j][3])
+    return v
+
+def RKF45(oh,t,i,x,y):
+    k1x = oh*u_comp(t,i,x,y)
+    k1y = oh*v_comp(t,i,x,y)
+    k2x = oh*u_comp(t,i,x+1/4*k1x,y+ 1/4 * k1y)
+    k2y = oh*v_comp(t,i,x+ 1/4 * k1x, y + 1/4*k1y)
+    k3x = oh*u_comp(t,i,x + 3/32 * k1x + 9/32 * k2x, y + 3/32 * k1y + 9/32 * k2y)
+    k3y = oh*v_comp(t,i,x + 3/32 * k1x + 9/32 * k2x, y + 3/32 * k1y + 9/32 * k2y)
+    k4x = oh*u_comp(t,i,x + 1932/2197 * k1x - 7200/2197 * k2x + 7296/2197 * k3x, y + 1932/2197 * k1y - 7200/2197 * k2y + 7296/2197 * k3y)
+    k4y = oh*v_comp(t,i,x + 1932/2197 * k1x - 7200/2197 * k2x + 7296/2197 * k3x, y + 1932/2197 * k1y - 7200/2197 * k2y + 7296/2197 * k3y)
+    k5x = oh*u_comp(t,i,x + 439/216 * k1x - 8*k2x +3680/513 * k3x - 845/4104 * k4x,y + 439/216 * k1y - 8*k2y +3680/513 * k3y - 845/4104 * k4y)
+    k5y = oh*v_comp(t,i,x + 439/216 * k1x - 8*k2x +3680/513 * k3x - 845/4104 * k4x,y + 439/216 * k1y - 8*k2y +3680/513 * k3y - 845/4104 * k4y)
+    k6x = oh*u_comp(t,i,x - 8/27 * k1x + 2*k2x - 3544/2565 * k3x + 1859/4104 * k4x - 11/40 * k5x, y - 8/27 * k1y + 2*k2y - 3544/2565 * k3y + 1859/4104 * k4y - 11/40 * k5y)
+    k6y = oh*v_comp(t,i,x - 8/27 * k1x + 2*k2x - 3544/2565 * k3x + 1859/4104 * k4x - 11/40 * k5x, y - 8/27 * k1y + 2*k2y - 3544/2565 * k3y + 1859/4104 * k4y - 11/40 * k5y)
+    RKF4x = 25/216 * k1x + 1408/2565 * k3x + 2197/4104 * k4x - 1/5 * k5x
+    RKF5x = 16/135 * k1x + 6656/12825 * k3x + 28561/56430 * k4x - 9/50 * k5x + 2/55 * k6x
+    RKF4y = 25/216 * k1y + 1408/2565 * k3y + 2197/4104 * k4y - 1/5 * k5y
+    RKF5y = 16/135 * k1y + 6656/12825 * k3y + 28561/56430 * k4y - 9/50 * k5y + 2/55 * k6y
+    return (RKF4x, RKF4y), (RKF5x, RKF5y)
+
+def energy(time):
+    i_sum = 0
+    for i in range(N):
+        j_sum = 0
+        x = data[i][3]
+        y = data[i][4]
+        for j in range(N):
+            if j != i :
+                r2 = (data[j][3]-x)**2 + (data[j][4]-y)**2
+                j_sum += data[i][0]*data[j][0] * np.log(r2)
+        i_sum += j_sum
+    return -i_sum
+
+def TE(z,y):
+    return abs(z-y)/h
+
+tol = 2*10**(-18)
+TEX = []
+TEY = []
+X4 = []
+Y4 = []
+j = 0
+Energy = []
+Err = []
+while t < final_t:
+    h = min(h, abs(final_t-t))
+    for i in range(N):
+        l, m = RKF45(h,t, i, data[i][3],data[i][4])
+        y4 = data[i][4] + l[1]
+        y5 = data[i][4] + m[1]
+        x4 = data[i][3] + l[0]
+        x5 = data[i][3] + m[0]
+        X4.append(x4)
+        Y4.append(y4)
+        TEX.append(TE(x4,x5))
+        TEY.append(TE(y4,y5))
+    print(max(max(TEX,TEY)))
+    if max(max(TEX,TEY)) <= tol:
+        for i in range(N):
+            pos[j][i+i] = data[i][3]
+            pos[j][i+i+1] = data[i][4]
+            data[i][3] = X4[i]
+            data[i][4] = Y4[i]
+        H.append(h)
+        T.append(t)
+        Energy.append(energy(t))
+        Err.append(abs(abs((Energy[len(T)-1]-Energy[0]))/Energy[0])*100)
+        t += h
+        j += 1
+      
+    #print(t)
+    #print(h)
+    if max(max(TEX,TEY)) == 0:
+        h = h*1.5
+    else:
+        
+        h = h * min( max( 0.84 * ( tol / max(max(TEX,TEY)))**0.25, 0.1 ), 0.75 )
+    if h > max_h:
+        h = max_h
+    if h < min_h:
+        h = min_h
+    TEX = []
+    TEY = []
+    X4 = []
+    Y4 = []
+    
+fig, ax = plt.subplots(1,2)
+
+pos = pos[0 : len(Err)]
+
+for i in range(N):
+    ax[0].scatter(pos[0][i+i],pos[0][i+i+1],color = color[i])
+    ax[0].scatter(pos[len(pos)-1][i+i],pos[len(pos)-1][i+i+1], color = color[i], facecolors="none")
+    ax[0].plot(pos[:,i+i],pos[:,i+i+1], color = color[i])
+    
+
+ax[1].semilogy(T,Err)
+plt.show()
+#%%
+#4 Body Problem With both
+import matplotlib.pyplot as plt
+import time
+import numpy as np
+T1 = time.time()
+N = 4
+a = 5
+sh = 0.001
+h = sh
+t = 0
+final_t = 10
+data = np.zeros([N,5])
+pos = np.zeros([int(final_t/sh)+1,N*2])
+#charge
+data[0][0] = -1
+data[1][0] = 1
+data[2][0] = 1
+data[3][0] = -1
+#x
+data[0][3] = 0
+data[1][3] = 0
+data[2][3] = -a
+data[3][3] = -a
+#y
+data[0][4] = a/8
+data[1][4] = -a/8
+data[2][4] = a/8
+data[3][4] = -a/8
+Errtot = []
+T = []
+color = []
+
+for i in range(len(data)):
+    if data[i][0] == 1:
+        color.append("red")
+    else:
+        color.append("blue")
+
+
+def u_comp(time,i,x,y): #Eq'n for dx/dt
+    u = 0
+    for j in range(N):
+        if j != i:
+            r2 = (data[j][3]-x)*(data[j][3]-x) + (data[j][4]-y)*(data[j][4]-y)
+            u += (data[j][0]/r2) * (y-data[j][4])
+    return -u
+
+def v_comp(time,i,x,y): #Eq'n for dy/dt
+    v = 0
+    for j in range(N):
+        if j != i:
+            r2 = (data[j][3]-x)*(data[j][3]-x) + (data[j][4]-y)*(data[j][4]-y)
+            v += (data[j][0]/r2) * (x - data[j][3])
+    return v
+
+def rungek(time,i,x,y):
+    k1u = h*u_comp(time,i, x,y) 
+    k1v = h*v_comp(time,i,x,y)
+    k2u  = h*u_comp(time+h/2,i, x+k1u/2, y+k1v/2)
+    k2v  = h*v_comp(time + h/2,i, x+k1u/2, y+k1v/2)
+    k3u  = h*u_comp(time+h/2,i,x+k2u/2, y+k2v/2)
+    k3v  = h*v_comp(time + h/2,i, x+k2u/2, y+k2v/2)
+    k4u  = h*u_comp(time+h,i,x+k3u, y+k3v)
+    k4v  = h*v_comp(time + h,i, x+k3u, y+k3v)
+    #Returning step in x and y
+    return (1/6)*(k1u+ 2*k2u + 2*k3u + k4u),(1/6)*(k1v+ 2*k2v + 2*k3v + k4v)
+
+def energy(time):
+    i_sum = 0
+    for i in range(N):
+        j_sum = 0
+        x = data[i][3]
+        y = data[i][4]
+        for j in range(N):
+            if j != i :
+                r2 = (data[j][3]-x)**2 + (data[j][4]-y)**2
+                j_sum += data[i][0]*data[j][0] * np.log(r2)
+        i_sum += j_sum
+    return -i_sum
+
+tol = 1e-5
+j = 0
+Energy = []
+Err = []
+E0 = energy(0)
+while t < final_t:
+    h = min(h, abs(final_t-t))
+    E = energy(t)
+    errE = abs(abs((E-E0))/E0)*100
+    if errE <= tol:
+        for i in range(N):
+            pos[j][i+i] = data[i][3]
+            pos[j][i+i+1] = data[i][4]
+            l, m = rungek(t, i, data[i][3],data[i][4])
+            data[i][3] = data[i][3] + l
+            data[i][4] = data[i][4] + m
+        T.append(t)
+        Err.append(errE)
+        t += h
+        j += 1
+    if errE == 0:
+        h = h*1.5
+    else:
+        h = h * min( max( 0.84 * ( tol / errE)**0.25, 0.75 ), 1.5 )
+    if h > sh*1.5:
+        h = sh*1.5
+    if h < sh*0.75:
+        h = sh*0.75
+    #print(h)
+    print(t)
+fig, ax = plt.subplots(1,2)
+pos = pos[0 : len(Err)]
+
+
+for i in range(N):
+    ax[0].scatter(pos[0][i+i],pos[0][i+i+1],color = color[i])
+    ax[0].scatter(pos[len(pos)-1][i+i],pos[len(pos)-1][i+i+1], color = color[i], facecolors="none")
+    ax[0].plot(pos[:,i+i],pos[:,i+i+1], color = color[i])
+
+ax[1].semilogy(T,Err)
+print(abs(time.time()-T1))
+
+#4 Body Problem Without adaptive
+import matplotlib.pyplot as plt
+import time
+import numpy as np
+T1 = time.time()
+N = 4
+a = 5
+dt = 0.001
+t = 0
+final_t = 10
+data = np.zeros([N,5])
+pos = np.zeros([int(final_t/dt)+1,N*2])
+#charge
+data[0][0] = -1
+data[1][0] = 1
+data[2][0] = 1
+data[3][0] = -1
+#x
+data[0][3] = 0
+data[1][3] = 0
+data[2][3] = -a
+data[3][3] = -a
+#y
+data[0][4] = a/8
+data[1][4] = -a/8
+data[2][4] = a/8
+data[3][4] = -a/8
+Errtot = []
+T = []
+color = []
+
+for i in range(len(data)):
+    if data[i][0] == 1:
+        color.append("red")
+    else:
+        color.append("blue")
+
+
+def u_comp(time,i,x,y): #Eq'n for dx/dt
+    u = 0
+    for j in range(N):
+        if j != i:
+            r2 = (data[j][3]-x)*(data[j][3]-x) + (data[j][4]-y)*(data[j][4]-y)
+            u += (data[j][0]/r2) * (y-data[j][4])
+    return -u
+
+def v_comp(time,i,x,y): #Eq'n for dy/dt
+    v = 0
+    for j in range(N):
+        if j != i:
+            r2 = (data[j][3]-x)*(data[j][3]-x) + (data[j][4]-y)*(data[j][4]-y)
+            v += (data[j][0]/r2) * (x - data[j][3])
+    return v
+
+def rungek(time,i,x,y):
+    k1u = dt*u_comp(time,i, x,y) 
+    k1v = dt*v_comp(time,i,x,y)
+    k2u  = dt*u_comp(time+dt/2,i, x+k1u/2, y+k1v/2)
+    k2v  = dt*v_comp(time + dt/2,i, x+k1u/2, y+k1v/2)
+    k3u  = dt*u_comp(time+dt/2,i,x+k2u/2, y+k2v/2)
+    k3v  = dt*v_comp(time + dt/2,i, x+k2u/2, y+k2v/2)
+    k4u  = dt*u_comp(time+dt,i,x+k3u, y+k3v)
+    k4v  = dt*v_comp(time + dt,i, x+k3u, y+k3v)
+    #Returning step in x and y
+    return (1/6)*(k1u+ 2*k2u + 2*k3u + k4u),(1/6)*(k1v+ 2*k2v + 2*k3v + k4v)
+
+def energy(time):
+    i_sum = 0
+    for i in range(N):
+        j_sum = 0
+        x = data[i][3]
+        y = data[i][4]
+        for j in range(N):
+            if j != i :
+                r2 = (data[j][3]-x)**2 + (data[j][4]-y)**2
+                j_sum += data[i][0]*data[j][0] * np.log(r2)
+        i_sum += j_sum
+    return -i_sum
+
+j = 0
+Energy = []
+Err = []
+while t < final_t:
+    for i in range(N):
+        pos[j][i+i] = data[i][3]
+        pos[j][i+i+1] = data[i][4]
+        l, m = rungek(t, i, data[i][3],data[i][4])
+        data[i][3] = data[i][3] + l
+        data[i][4] = data[i][4] + m
+    T.append(t)
+    Energy.append(energy(t))
+    Err.append(abs(abs((Energy[len(T)-1]-Energy[0]))/Energy[0])*100)
+    t += dt
+    print(t)
+    j += 1
+    
+
+pos = pos[0 : len(Err)]
+
+for i in range(N):
+    ax[0].scatter(pos[0][i+i],pos[0][i+i+1],color = color[i])
+    ax[0].scatter(pos[len(pos)-1][i+i],pos[len(pos)-1][i+i+1], color = color[i], facecolors="none")
+    ax[0].plot(pos[:,i+i],pos[:,i+i+1], color = color[i])
+print(abs(time.time()-T1))
+ax[1].semilogy(T,Err)
+ax[0].set_xticks([])
+ax[0].set_xticks([], minor=True)
+ax[0].set_yticks([])
+ax[0].set_yticks([], minor=True)
+ax[1].set_xlabel("Time In Simulation (Seconds)", fontsize = 10)
+ax[1].set_ylabel("Percentage Error In The Hamiltonian", fontsize = 10, wrap = True)
+ax[1].legend(["Adaptive Time Step","Runge-Kutta"],loc="upper left")
+plt.show()
+fig.subplots_adjust(top=0.969,
+bottom=0.226,
+left=0.031,
+right=0.968,
+hspace=0.2,
+wspace=0.325)
+plt.savefig("4V.png",
+            bbox_inches ="tight",
+            dpi = 1000)
+#%%
+#4 Body Problem, tracking trajectory
+
+import matplotlib.pyplot as plt
+import time
+import numpy as np
+T1 = time.time()
+N = 4
+a = 5
+sh = 0.001
+h = sh
+t = 0
+final_t = 5
+data = np.zeros([N,5])
+pos = np.zeros([int(final_t/sh)+1,N*2])
+fig, ax = plt.subplots()
+#charge
+data[0][0] = -1
+data[1][0] = 1
+data[2][0] = 1
+data[3][0] = -1
+#x
+data[0][3] = 0
+data[1][3] = 0
+data[2][3] = -a
+data[3][3] = -a
+#y
+data[0][4] = a/8
+data[1][4] = -a/8
+data[2][4] = a/8
+data[3][4] = -a/8
+Errtot = []
+T = []
+color = []
+
+for i in range(len(data)):
+    if data[i][0] == 1:
+        color.append("red")
+    else:
+        color.append("blue")
+
+
+def u_comp(time,i,x,y): #Eq'n for dx/dt
+    u = 0
+    for j in range(N):
+        if j != i:
+            r2 = (data[j][3]-x)*(data[j][3]-x) + (data[j][4]-y)*(data[j][4]-y)
+            u += (data[j][0]/r2) * (y-data[j][4])
+    return -u
+
+def v_comp(time,i,x,y): #Eq'n for dy/dt
+    v = 0
+    for j in range(N):
+        if j != i:
+            r2 = (data[j][3]-x)*(data[j][3]-x) + (data[j][4]-y)*(data[j][4]-y)
+            v += (data[j][0]/r2) * (x - data[j][3])
+    return v
+
+def rungek(time,i,x,y):
+    k1u = h*u_comp(time,i, x,y) 
+    k1v = h*v_comp(time,i,x,y)
+    k2u  = h*u_comp(time+h/2,i, x+k1u/2, y+k1v/2)
+    k2v  = h*v_comp(time + h/2,i, x+k1u/2, y+k1v/2)
+    k3u  = h*u_comp(time+h/2,i,x+k2u/2, y+k2v/2)
+    k3v  = h*v_comp(time + h/2,i, x+k2u/2, y+k2v/2)
+    k4u  = h*u_comp(time+h,i,x+k3u, y+k3v)
+    k4v  = h*v_comp(time + h,i, x+k3u, y+k3v)
+    #Returning step in x and y
+    return (1/6)*(k1u+ 2*k2u + 2*k3u + k4u),(1/6)*(k1v+ 2*k2v + 2*k3v + k4v)
+
+def energy(time):
+    i_sum = 0
+    for i in range(N):
+        j_sum = 0
+        x = data[i][3]
+        y = data[i][4]
+        for j in range(N):
+            if j != i :
+                r2 = (data[j][3]-x)**2 + (data[j][4]-y)**2
+                j_sum += data[i][0]*data[j][0] * np.log(r2)
+        i_sum += j_sum
+    return -i_sum
+
+tol = 1e-10
+j = 0
+Energy = []
+Err = []
+E0 = energy(0)
+while t < final_t:
+    h = min(h, abs(final_t-t))
+    E = energy(t)
+    errE = abs(abs((E-E0))/E0)*100
+    if errE <= tol:
+        for i in range(N):
+            pos[j][i+i] = data[i][3]
+            pos[j][i+i+1] = data[i][4]
+            l, m = rungek(t, i, data[i][3],data[i][4])
+            data[i][3] = data[i][3] + l
+            data[i][4] = data[i][4] + m
+        T.append(t)
+        Err.append(errE)
+        t += h
+        j += 1
+    if errE == 0:
+        h = h*1.5
+    else:
+        h = h * min( max( 0.84 * ( tol / errE)**0.25, 0.75 ), 1.5 )
+    if h > sh*1.5:
+        h = sh*1.5
+    if h < sh*0.75:
+        h = sh*0.75
+
+pos = pos[0 : len(Err)]
+traje = np.zeros([int(len(pos)),N*2])
+vals = np.zeros([int(len(pos)),N*2])
+
+for i in range(N):
+    x = np.linspace(min(pos[:,i+i]),max(pos[:,i+i]),int(len(pos)))
+    y = np.linspace(min(pos[:,i+i+1]),max(pos[:,i+i+1]),int(len(pos)))
+    X, Y = np.meshgrid(x,y)
+    def traj(x,y):
+        c = 2*(pos[0][i+i]+2.5)*(pos[0][i+i+1])*((pos[0][i+i]+2.5)**2 + (pos[0][i+i+1])**2)**(-0.5)
+        return 2*(x+2.5)*y*((x+2.5)**2 + y**2)**(-0.5) - c
+    L = ax.contour(x,y,traj(X,Y),[0], colors = color[i],alpha= 0 )
+    for seg in enumerate(L.allsegs[0]):
+        seg = seg[1]
+        x = seg[:,0]
+        y = seg[:,1]
+        x = x[::-1]
+        y = y[::-1]
+    j = 0
+    for a1 in pos[:,i+i]:
+        errx = float("inf")
+        for a2 in range(500):
+            if j+j - a2>0 and j+j -a2 < len(x):
+                if abs(a1-x[j+j-a2]) < errx:
+                    errx = abs(a1-x[j+j-a2])
+                    valx = x[j+j-a2]
+            if j+j + a2 < len(x):
+                if abs(a1-x[j+j+a2])< errx:
+                    errx = abs(a1-x[j+j+a2])
+                    valx = x[j+j+a2]
+        traje[j][i+i] = errx
+        vals[j][i+i] = valx
+        j +=1
+    j = 0
+    for a1 in pos[:,i+i+1]:
+        erry = float("inf")
+        for a2 in range(500):
+            if (j+j - a2)>0 and (j+j - a2) < len(y):
+                if abs(a1-y[j+j-a2]) < erry:
+                    erry = abs(a1-y[j+j-a2])
+                    valy = y[j+j-a2]
+            if j+j + a2 < len(y):
+                if abs(a1-y[j+j+a2])< erry:
+                    erry = abs(a1-y[j+j+a2])
+                    valy = y[j+j+a2]
+        traje[j][i+i+1] = erry
+        vals[j][i+i+1] = valy
+        j +=1
+    print(i)
+trajerr = []
+for j in range(len(pos)):
+    P = []
+    for i in range(N):
+        e_1 = np.sqrt((pos[j][i+i])** 2 + (pos[j][i+i+1])**2)
+        e_2 = np.sqrt((vals[j][i+i])**2 + (vals[j][i+i+1])**2)
+        P.append(abs(abs(e_1-e_2)/e_2))
+    trajerr.append(np.mean(P)*100)
+
+ax.semilogy(T,trajerr)
+print(abs(time.time()-T1))
+print(np.mean(trajerr))
+
+import matplotlib.pyplot as plt
+import time
+import numpy as np
+T1 = time.time()
+N = 4
+a = 5
+dt = 0.001
+t = 0
+final_t = 5
+data = np.zeros([N,5])
+pos = np.zeros([int(final_t/dt)+1,N*2])
+#charge
+data[0][0] = -1
+data[1][0] = 1
+data[2][0] = 1
+data[3][0] = -1
+#x
+data[0][3] = 0
+data[1][3] = 0
+data[2][3] = -a
+data[3][3] = -a
+#y
+data[0][4] = a/8
+data[1][4] = -a/8
+data[2][4] = a/8
+data[3][4] = -a/8
+Errtot = []
+T = []
+color = []
+
+for i in range(len(data)):
+    if data[i][0] == 1:
+        color.append("red")
+    else:
+        color.append("blue")
+
+
+def u_comp(time,i,x,y): #Eq'n for dx/dt
+    u = 0
+    for j in range(N):
+        if j != i:
+            r2 = (data[j][3]-x)*(data[j][3]-x) + (data[j][4]-y)*(data[j][4]-y)
+            u += (data[j][0]/r2) * (y-data[j][4])
+    return -u
+
+def v_comp(time,i,x,y): #Eq'n for dy/dt
+    v = 0
+    for j in range(N):
+        if j != i:
+            r2 = (data[j][3]-x)*(data[j][3]-x) + (data[j][4]-y)*(data[j][4]-y)
+            v += (data[j][0]/r2) * (x - data[j][3])
+    return v
+
+def rungek(time,i,x,y):
+    k1u = dt*u_comp(time,i, x,y) 
+    k1v = dt*v_comp(time,i,x,y)
+    k2u  = dt*u_comp(time+dt/2,i, x+k1u/2, y+k1v/2)
+    k2v  = dt*v_comp(time + dt/2,i, x+k1u/2, y+k1v/2)
+    k3u  = dt*u_comp(time+dt/2,i,x+k2u/2, y+k2v/2)
+    k3v  = dt*v_comp(time + dt/2,i, x+k2u/2, y+k2v/2)
+    k4u  = dt*u_comp(time+dt,i,x+k3u, y+k3v)
+    k4v  = dt*v_comp(time + dt,i, x+k3u, y+k3v)
+    #Returning step in x and y
+    return (1/6)*(k1u+ 2*k2u + 2*k3u + k4u),(1/6)*(k1v+ 2*k2v + 2*k3v + k4v)
+
+def energy(time):
+    i_sum = 0
+    for i in range(N):
+        j_sum = 0
+        x = data[i][3]
+        y = data[i][4]
+        for j in range(N):
+            if j != i :
+                r2 = (data[j][3]-x)**2 + (data[j][4]-y)**2
+                j_sum += data[i][0]*data[j][0] * np.log(r2)
+        i_sum += j_sum
+    return -i_sum
+
+j = 0
+Energy = []
+Err = []
+while t < final_t:
+    for i in range(N):
+        pos[j][i+i] = data[i][3]
+        pos[j][i+i+1] = data[i][4]
+        l, m = rungek(t, i, data[i][3],data[i][4])
+        data[i][3] = data[i][3] + l
+        data[i][4] = data[i][4] + m
+    T.append(t)
+    Energy.append(energy(t))
+    Err.append(abs(abs((Energy[len(T)-1]-Energy[0]))/Energy[0])*100)
+    t += dt
+    j += 1
+    
+
+
+pos = pos[0 : len(Err)]
+traje = np.zeros([int(len(pos)),N*2])
+vals = np.zeros([int(len(pos)),N*2])
+
+j = 0
+for i in range(N):
+    x = np.linspace(min(pos[:,i+i]),max(pos[:,i+i]),int(len(pos)))
+    y = np.linspace(min(pos[:,i+i+1]),max(pos[:,i+i+1]),int(len(pos)))
+    X, Y = np.meshgrid(x,y)
+    def traj(x,y):
+        c = 2*(pos[0][i+i]+2.5)*(pos[0][i+i+1])*((pos[0][i+i]+2.5)**2 + (pos[0][i+i+1])**2)**(-0.5)
+        return 2*(x+2.5)*y*((x+2.5)**2 + y**2)**(-0.5) - c
+    L = ax.contour(x,y,traj(X,Y),[0], colors = color[i],alpha=0)
+    for seg in enumerate(L.allsegs[0]):
+        seg = seg[1]
+        x = seg[:,0]
+        y = seg[:,1]
+        x = x[::-1]
+        y = y[::-1]
+    j = 0
+    for a1 in pos[:,i+i]:
+        errx = float("inf")
+        for a2 in range(500):
+            if j+j - a2>0 and j+j -a2 < len(x):
+                if abs(a1-x[j+j-a2]) < errx:
+                    errx = abs(a1-x[j+j-a2])
+                    valx = x[j+j-a2]
+            if j+j + a2 < len(x):
+                if abs(a1-x[j+j+a2])< errx:
+                    errx = abs(a1-x[j+j+a2])
+                    valx = x[j+j+a2]
+        traje[j][i+i] = errx
+        vals[j][i+i] = valx
+        j +=1
+    j = 0
+    for a1 in pos[:,i+i+1]:
+        erry = float("inf")
+        for a2 in range(500):
+            if (j+j - a2)>0 and (j+j - a2) < len(y):
+                if abs(a1-y[j+j-a2]) < erry:
+                    erry = abs(a1-y[j+j-a2])
+                    valy = y[j+j-a2]
+            if j+j + a2 < len(y):
+                if abs(a1-y[j+j+a2])< erry:
+                    erry = abs(a1-y[j+j+a2])
+                    valy = y[j+j+a2]
+        traje[j][i+i+1] = erry
+        vals[j][i+i+1] = valy
+        j +=1
+    print(i)
+trajerr = []
+for j in range(len(pos)):
+    P = []
+    for i in range(N):
+        e_1 = np.sqrt((pos[j][i+i])** 2 + (pos[j][i+i+1])**2)
+        e_2 = np.sqrt((vals[j][i+i])**2 + (vals[j][i+i+1])**2)
+        P.append(abs(abs(e_1-e_2)/e_2))
+    trajerr.append(np.mean(P)*100)
+    
+print(abs(time.time()-T1))
+ax.semilogy(T,trajerr)
+plt.show()
+print(np.mean(trajerr))
+
+ax.legend(["Adaptive Time Step","Runge-Kutta"],loc = "upper left")
+ax.set_xlim(left=0,right=5)
+ax.set_ylabel("Percentage Error In The Position Of The Vortex")
+ax.set_xlabel("Time In Simulation")
+plt.savefig("traj err.png",
+            bbox_inches ="tight",
+            dpi = 1000)
+#%%
+#4 Body Problem With adaptive
+import matplotlib.pyplot as plt
+import time
+import numpy as np
+T1 = time.time()
+N = 4
+a = 5
+sh = 0.001
+h = sh
+t = 0
+final_t = 5
+data = np.zeros([N,5])
+pos = np.zeros([int(final_t/sh)+1,N*2])
+#charge
+data[0][0] = -1
+data[1][0] = 1
+data[2][0] = 1
+data[3][0] = -1
+#x
+data[0][3] = 0
+data[1][3] = 0
+data[2][3] = -a
+data[3][3] = -a
+#y
+data[0][4] = a/8
+data[1][4] = -a/8
+data[2][4] = a/8
+data[3][4] = -a/8
+Errtot = []
+T = []
+color = []
+
+for i in range(len(data)):
+    if data[i][0] == 1:
+        color.append("red")
+    else:
+        color.append("blue")
+
+
+def u_comp(time,i,x,y): #Eq'n for dx/dt
+    u = 0
+    for j in range(N):
+        if j != i:
+            r2 = (data[j][3]-x)*(data[j][3]-x) + (data[j][4]-y)*(data[j][4]-y)
+            u += (data[j][0]/r2) * (y-data[j][4])
+    return -u
+
+def v_comp(time,i,x,y): #Eq'n for dy/dt
+    v = 0
+    for j in range(N):
+        if j != i:
+            r2 = (data[j][3]-x)*(data[j][3]-x) + (data[j][4]-y)*(data[j][4]-y)
+            v += (data[j][0]/r2) * (x - data[j][3])
+    return v
+
+def rungek(time,i,x,y):
+    k1u = h*u_comp(time,i, x,y) 
+    k1v = h*v_comp(time,i,x,y)
+    k2u  = h*u_comp(time+h/2,i, x+k1u/2, y+k1v/2)
+    k2v  = h*v_comp(time + h/2,i, x+k1u/2, y+k1v/2)
+    k3u  = h*u_comp(time+h/2,i,x+k2u/2, y+k2v/2)
+    k3v  = h*v_comp(time + h/2,i, x+k2u/2, y+k2v/2)
+    k4u  = h*u_comp(time+h,i,x+k3u, y+k3v)
+    k4v  = h*v_comp(time + h,i, x+k3u, y+k3v)
+    #Returning step in x and y
+    return (1/6)*(k1u+ 2*k2u + 2*k3u + k4u),(1/6)*(k1v+ 2*k2v + 2*k3v + k4v)
+
+def energy(time):
+    i_sum = 0
+    for i in range(N):
+        j_sum = 0
+        x = data[i][3]
+        y = data[i][4]
+        for j in range(N):
+            if j != i :
+                r2 = (data[j][3]-x)**2 + (data[j][4]-y)**2
+                j_sum += data[i][0]*data[j][0] * np.log(r2)
+        i_sum += j_sum
+    return -i_sum
+
+tol = 1e-10
+j = 0
+Energy = []
+Err = []
+E0 = energy(0)
+while t < final_t:
+    h = min(h, abs(final_t-t))
+    E = energy(t)
+    errE = abs(abs((E-E0))/E0)*100
+    if errE <= tol:
+        for i in range(N):
+            pos[j][i+i] = data[i][3]
+            pos[j][i+i+1] = data[i][4]
+            l, m = rungek(t, i, data[i][3],data[i][4])
+            data[i][3] = data[i][3] + l
+            data[i][4] = data[i][4] + m
+        T.append(t)
+        Err.append(errE)
+        t += h
+        j += 1
+    if errE == 0:
+        h = h*1.5
+    else:
+        h = h * min( max( 0.84 * ( tol / errE)**0.25, 0.75 ), 1.5 )
+    if h > sh*1.5:
+        h = sh*1.5
+    if h < sh*0.75:
+        h = sh*0.75
+    #print(h)
+    print(t)
+fig, ax = plt.subplots(1,3)
+pos = pos[0 : len(Err)]
+
+def error(x,y,x_e,y_e):
+    return abs(np.sqrt(x**2 + y**2)-np.sqrt(x_e **2 + y_e **2)/np.sqrt(x_e**2 + y_e**2))
+
+trajerr = np.zeros([len(pos),N])
+for i in range(N):
+    ax[0].scatter(pos[0][i+i],pos[0][i+i+1],color = color[i])
+    ax[0].scatter(pos[len(pos)-1][i+i],pos[len(pos)-1][i+i+1], color = color[i], facecolors="none")
+    ax[0].plot(pos[:,i+i],pos[:,i+i+1], color = color[i])
+
+ax[1].semilogy(T,Err)
+print(abs(time.time()-T1))
+
+#%%
+#Many vortex system
+import matplotlib.pyplot as plt
+import time
+import numpy as np
+import random
+T1 =time.time()
+N = 100
+sh = 0.001
+h = sh
+t = 0
+final_t = 5
+N2 = round(N/2)
+data = np.zeros([N,5])
+pos = np.zeros([int(final_t/sh)+1,N*2])
+
+Errtot = []
+T = []
+color = []
+
+for i in range(N):
+    data[i][0] = random.randrange(-1,2,2)
+    data[i][3] = random.randrange(-N2,N2) #current position x
+    data[i][4] = random.randrange(-N2,N2) # currention position y
+    if data[i][0] == 1:
+        color.append("red")
+    else:
+        color.append("blue")
+
+def u_comp(time,i,x,y): #Eq'n for dx/dt
+    u = 0
+    for j in range(N):
+        if j != i:
+            r2 = (data[j][3]-x)*(data[j][3]-x) + (data[j][4]-y)*(data[j][4]-y)
+            u += (data[j][0]/r2) * (y-data[j][4])
+    return -u
+
+def v_comp(time,i,x,y): #Eq'n for dy/dt
+    v = 0
+    for j in range(N):
+        if j != i:
+            r2 = (data[j][3]-x)*(data[j][3]-x) + (data[j][4]-y)*(data[j][4]-y)
+            v += (data[j][0]/r2) * (x - data[j][3])
+    return v
+
+def rungek(time,i,x,y):
+    k1u = h*u_comp(time,i, x,y) 
+    k1v = h*v_comp(time,i,x,y)
+    k2u  = h*u_comp(time+h/2,i, x+k1u/2, y+k1v/2)
+    k2v  = h*v_comp(time + h/2,i, x+k1u/2, y+k1v/2)
+    k3u  = h*u_comp(time+h/2,i,x+k2u/2, y+k2v/2)
+    k3v  = h*v_comp(time + h/2,i, x+k2u/2, y+k2v/2)
+    k4u  = h*u_comp(time+h,i,x+k3u, y+k3v)
+    k4v  = h*v_comp(time + h,i, x+k3u, y+k3v)
+    #Returning step in x and y
+    return (1/6)*(k1u+ 2*k2u + 2*k3u + k4u),(1/6)*(k1v+ 2*k2v + 2*k3v + k4v)
+
+def energy(time):
+    i_sum = 0
+    for i in range(N):
+        j_sum = 0
+        x = data[i][3]
+        y = data[i][4]
+        for j in range(N):
+            if j != i :
+                r2 = (data[j][3]-x)**2 + (data[j][4]-y)**2
+                j_sum += data[i][0]*data[j][0] * np.log(r2)
+        i_sum += j_sum
+    return -i_sum
+
+tol = 1e-10
+j = 0
+Energy = []
+Err = []
+E0 = energy(0)
+while t < final_t:
+    h = min(h, abs(final_t-t))
+    E = energy(t)
+    errE = abs(abs((E-E0))/E0)*100
+    if errE <= tol:
+        for i in range(N):
+            pos[j][i+i] = data[i][3]
+            pos[j][i+i+1] = data[i][4]
+            l, m = rungek(t, i, data[i][3],data[i][4])
+            data[i][3] = data[i][3] + l
+            data[i][4] = data[i][4] + m
+        T.append(t)
+        Err.append(errE)
+        t += h
+        j += 1
+    if errE == 0:
+        h = h*1.5
+    else:
+        h = h * min( max( 0.84 * ( tol / errE)**0.25, 0.75 ), 1.5 )
+    if h > sh*1.5:
+        h = sh*1.5
+    if h < sh*0.75:
+        h = sh*0.75
+    #print(h)
+    print(t)
+fig, ax = plt.subplots(1,2)
+pos = pos[0 : len(Err)]
+
+
+for i in range(N):
+    ax[0].scatter(pos[0][i+i],pos[0][i+i+1],color = color[i])
+    ax[0].scatter(pos[len(pos)-1][i+i],pos[len(pos)-1][i+i+1], color = color[i], facecolors="none")
+    ax[0].plot(pos[:,i+i],pos[:,i+i+1], color = color[i], alpha = 0.5)
+
+ax[1].semilogy(T,Err)
+ax[0].set_xticks([])
+ax[0].set_xticks([], minor=True)
+ax[0].set_yticks([])
+ax[0].set_yticks([], minor=True)
+ax[1].set_xlabel("Time In Simulation (Seconds)", fontsize = 10)
+ax[1].set_ylabel("Percentage Error In The Hamiltonian", fontsize = 10, wrap = True)
+fig.subplots_adjust(top=0.969,
+                    bottom=0.121,
+                    left=0.031,
+                    right=0.977,
+                    hspace=0.2,
+                    wspace=0.321)
+plt.savefig("MV.png",
+            bbox_inches ="tight",
+            dpi = 1000)
+plt.show()
+print(np.mean(Err))
+print(T1-time.time())
+#%%
+#Simulation
+import matplotlib.pyplot as plt
+import time
+import numpy as np
+import random
+from matplotlib.animation import FuncAnimation, PillowWriter
+
+N = 50
+N2 = round(N/2)
+sh = 0.001
+h = sh
+t = 0 
+final_t = 5
+data = np.zeros([N,5])
+pos = np.zeros([int(final_t/sh),N*2])
+
+T = []
+color = []
+E = []
+
+for i in range(N):
+    data[i][0] = random.randrange(-1,2,2)
+    data[i][3] = random.randrange(-N2,N2) #current position x
+    data[i][4] = random.randrange(-N2,N2) # currention position y
+    if data[i][0] == 1:
+        color.append("red")
+    else:
+        color.append("blue")
+
+
+def u_comp(time,i,x,y): #Eq'n for dx/dt
+    u = 0
+    for j in range(N):
+        if j != i:
+            r2 = (data[j][3]-x)*(data[j][3]-x) + (data[j][4]-y)*(data[j][4]-y)
+            u += (data[j][0]/r2) * (y-data[j][4])
+    return -u
+
+def v_comp(time,i,x,y): #Eq'n for dy/dt
+    v = 0
+    for j in range(N):
+        if j != i:
+            r2 = (data[j][3]-x)*(data[j][3]-x) + (data[j][4]-y)*(data[j][4]-y)
+            v += (data[j][0]/r2) * (x - data[j][3])
+    return v
+
+def rungek(time,i,x,y):
+    k1u = h*u_comp(time,i, x,y) 
+    k1v = h*v_comp(time,i,x,y)
+    k2u  = h*u_comp(time+h/2,i, x+k1u/2, y+k1v/2)
+    k2v  = h*v_comp(time + h/2,i, x+k1u/2, y+k1v/2)
+    k3u  = h*u_comp(time+h/2,i,x+k2u/2, y+k2v/2)
+    k3v  = h*v_comp(time + h/2,i, x+k2u/2, y+k2v/2)
+    k4u  = h*u_comp(time+h,i,x+k3u, y+k3v)
+    k4v  = h*v_comp(time + h,i, x+k3u, y+k3v)
+    #Returning step in x and y
+    return (1/6)*(k1u+ 2*k2u + 2*k3u + k4u),(1/6)*(k1v+ 2*k2v + 2*k3v + k4v)
+
+def energy(time):
+    i_sum = 0
+    for i in range(N):
+        j_sum = 0
+        x = data[i][3]
+        y = data[i][4]
+        for j in range(N):
+            if j != i :
+                r2 = (data[j][3]-x)**2 + (data[j][4]-y)**2
+                j_sum += data[i][0]*data[j][0] * np.log(r2)
+        i_sum += j_sum
+    return -i_sum
+
+tol = 1e-5
+j = 0
+Energy = []
+Err = []
+E0 = energy(0)
+while t < final_t:
+    h = min(h, abs(final_t-t))
+    E = energy(t)
+    errE = abs(abs((E-E0))/E0)*100
+    if errE <= tol:
+        for i in range(N):
+            pos[j][i+i] = data[i][3]
+            pos[j][i+i+1] = data[i][4]
+            l, m = rungek(t, i, data[i][3],data[i][4])
+            data[i][3] = data[i][3] + l
+            data[i][4] = data[i][4] + m
+        T.append(t)
+        Err.append(errE)
+        t += h
+        j += 1
+    if errE == 0:
+        h = h*1.5
+    else:
+        h = h * min( max( 0.84 * ( tol / errE)**0.25, 0.75 ), 1.5 )
+    if h > sh*1.5:
+        h = sh*1.5
+    if h < sh*0.75:
+        h = sh/100
+    #print(h)
+    print(t)
+    
+    
+fig, ax = plt.subplots(1,2)
+pos = pos[0 : len(Err)]
+    
+fig, ax = plt.subplots(1,3)
+
+
+for i in range(N):
+    ax[1].plot(pos[:,i+i],pos[:,i+i+1],color=color[i])
+    ax[1].scatter(pos[0][i+i],pos[0][i+i+1],color = color[i])
+    ax[1].scatter(pos[len(pos)-1][i+i],pos[len(pos)-1][i+i+1], color = color[i], facecolors="none")
+    
+ax[2].semilogy(T,Err,color = "black")
+
+
+#Animating plot (Takes a while to run)
+p = np.zeros([N,2])
+for i in range(N):
+        p[i][0]=pos[0][i+i]
+        p[i][1]=pos[0][i+i+1]
+
+max_x = 0
+min_x = 0
+max_y = 0
+min_y = 0
+
+for i in range(N):
+    c_max_x = np.max(pos[:,i+i])
+    if c_max_x > max_x:
+        max_x = c_max_x
+
+for i in range(N):
+    c_max_y = np.max(pos[:,i+i+1])
+    if c_max_y > max_y:
+        max_y = c_max_y
+        
+for i in range(N):
+    c_min_x = np.min(pos[:,i+i])
+    if c_min_x < min_x:
+        min_x = c_min_x
+
+        
+for i in range(N):
+    c_min_y = np.min(pos[:,i+i+1])
+    if c_min_y < min_y:
+        min_y = c_min_y
+    
+ax[0].set_ylim(min_y-3,max_y+3)
+ax[0].set_xlim(min_x-3,max_x+3)
+scatter = ax[0].scatter(p[:,0],p[:,1], color = color)    
+
+
+def animationfunc(j):
+    for i in range(N):
+        p[i][0]=pos[j][i+i]
+        p[i][1]=pos[j][i+i+1]
+    scatter.set_offsets(p)
+    print(j)
+    return scatter,
+
+
+anim = FuncAnimation(fig, animationfunc, frames = len(pos-1),interval = 100, save_count=1, blit=True,cache_frame_data=False)
+writergif = PillowWriter(fps=60)
+anim.save(r'vortexplot.gif', writer=writergif)
