@@ -1,0 +1,33 @@
+import matplotlib.pyplot as plt
+
+it = 1000
+tri = []
+numb = []
+contains = []
+
+def remove(top, array):
+    while top < max(array):
+        array.remove(max(array))
+    return array
+
+for i in range(it):
+    numb.append(i+1)
+    tri.append(sum(numb))
+    m_ax = max(numb)
+    numbs = [x for x in tri if x <= m_ax]
+    newmax = 0
+    counter = 0
+    while m_ax >= max(numbs):
+        for j in range(len(numbs)):
+            m_ax = m_ax - max(numbs)
+            counter += 1
+            if m_ax == 0:
+                break
+            if m_ax < max(numbs):
+                numbs = remove(m_ax, numbs)
+    contains.append(counter)
+    print(i)
+    
+plt.plot(numb, contains)
+plt.xlabel("Numbers")
+plt.ylabel("Minimum Amount Of Triangle Numbers Contained")   
